@@ -22,7 +22,7 @@ source.complete = function(self, request, callback)
   local context_before = request.option.context_before or 1
   local context_after = request.option.context_after or 3
   local quote = "'"
-  local path = request.option.path or "."
+  local only_current_buffer = request.option.only_current_buffer or false
   if vim.o.shell == "cmd.exe" then
     quote = '"'
   end
@@ -118,7 +118,7 @@ source.complete = function(self, request, callback)
             q,
             pattern,
             quote,
-            path
+            only_current_buffer and vim.fn.expand("%") or "."
           ),
           {
             on_stderr = on_event,
