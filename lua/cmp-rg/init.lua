@@ -42,7 +42,7 @@ source.complete = function(self, request, callback)
            then
             context = {}
             documentation_to_add = 0
-          elseif result.type == "context" then
+          elseif result.type == "context" and not request.option.only_current_buffer then
             local documentation = result.data.lines.text:gsub("\n", "")
             table.insert(context, documentation)
             if documentation_to_add > 0 then
@@ -67,11 +67,12 @@ source.complete = function(self, request, callback)
           elseif result.type == "match" then
             local label = result.data.submatches[1].match.text
             if label and not seen[label] then
-              local documentation = {result.data.path.text, "", "```"}
+              local documentation = not request.option.only_current_buffer and {result.data.path.text, "", "```"} or {}
               for i = context_before, 0, -1 do
                 table.insert(documentation, context[i])
               end
-              local match_line = result.data.lines.text:gsub("\n", "") .. "  <--"
+              local match_line =
+                not request.option.only_current_buffer and result.data.lines.text:gsub("\n", "") .. "  <--" or ""
               table.insert(documentation, match_line)
               table.insert(
                 items,
